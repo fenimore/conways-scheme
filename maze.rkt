@@ -59,7 +59,8 @@
     (vector-drop node-vec 1)
     (draw-node (vector-ref node-vec 0) bkg))))
 
-
+(define (draw-col nodes background)
+  (foldl draw-node background nodes))
 
 ;; Step One: Loop through rows
 ;; In each row, loop through columns
@@ -68,14 +69,12 @@
 ;;  (for ([j i])
 ;    (display j)))
 
-
-
-
-
 (define (render w)
   "game state is maze, list of nodes"
-  (draw-node
-   (vector-ref (vector-ref (make-board) 0) 0) background))
+;;  (draw-node
+;;   (vector-ref (vector-ref (make-board) 0) 0) background))
+  (draw-col
+   (vector->list (vector-ref (make-board) 0)) background))
   ;;(for ([row (make-board)])
   ;;(draw-nodes row background)))
 
