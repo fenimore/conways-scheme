@@ -18,15 +18,14 @@
 (define (empty-block)
   (square cell "outline" "black"))
 ;;(square CELL-SIZE #:outline #:black))
-;;(define full-block
+(define (full-block)
+  (square cell "solid" "black"))
   ;;(square cell #:solid #:black))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Structs
-(struct node (visited x y img) #:transparent)
-(define maze '())
-
-
+(struct node (visited x y img) #:transparent #:mutable)
+(define-struct world (grid))
 (define (make-board)
   "A Vector of Vectors for the grid"
   (vector->list
@@ -37,44 +36,40 @@
                                   (lambda (n) ;; n is the x coord
                                     (node #f m n (empty-block)))))))))
 
-;; depricated
-(define (draw-onto-grid img x y bkg)
-  "Wrapper for place-image"
-  (place-image
-   img
-   (+ (* cell x) margin)
-   (- (- (* cell y) (- (* cell cols) margin)))
-   bkg))
+(define maze
+  (make-world
+   (make-board)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Draw Functions
 (define (draw-node n bkg)
+  "Draw a node"
   (place-image
    (node-img n)
    (+ (* cell (node-x n)) margin)
    (- (- (* cell (node-y n)) (- (* cell cols) margin)))
    bkg))
-
 (define (draw-col nodes background)
+  "Draw a column from a list of nodes"
   (foldl draw-node background nodes))
-
 (define (draw-nodes nodes)
+  "Draws a List of List node grid"
   (foldl draw-col background nodes))
 
-;; Step One: Loop through rws
-;; In each row, loop through columns
-;; For each node, call draw-onto-grid
-;;(for ([i (make-board)])
-;;  (for ([j i])
-;    (display j)))
 
-(define (render w)
+(define (render m)
   "game state is maze, list of nodes"
-;;  (draw-node
-  ;;   (vector-ref (vector-ref (make-board) 0) 0) background))
-  (draw-nodes (make-board)))
-  ;;(for ([row (make-board)])
-  ;;(draw-nodes row background)))
+  (draw-nodes (world-grid m)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; User input function
+(define (press m key)
+  (display m)
+  )
 
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Game Loop
+(set-node-img! (list-ref (list-ref (world-grid maze) 0) 0) (full-block))
 (big-bang maze
-          (to-draw render))
+          (to-draw render)
+          (on-key press))
