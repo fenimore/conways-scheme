@@ -30,12 +30,14 @@
 (define (make-grid)
   "A Vector of Vectors for the grid"
   (vector->list
-   (build-vector rows
-                 (lambda (m) ;; m is the y coord
-                   (vector->list
-                    (build-vector cols
-                                  (lambda (n) ;; n is the x coord
-                                    (node #f m n (empty-block)))))))))
+   (build-vector
+    rows
+    (lambda (m) ;; m is the y coord
+      (vector->list
+       (build-vector
+        cols
+        (lambda (n) ;; n is the x coord
+          (node #f m n (empty-block)))))))))
 
 (define maze
   (make-world
@@ -67,7 +69,13 @@
 ;; User input function
 (define (press m key)
   (cond
-    [(key=? key "up") (move-up m)])
+    [(key=? key "up") (move-up m)]
+    [(key=? key "right") (move-right m)]
+    [(key=? key "left") (move-left m)]
+    [(key=? key "down") (move-down m)])
+
+  (display (world-loco m))
+  ;; set the visited node to full
   (set-node-img!
    (list-ref
     (list-ref
@@ -80,7 +88,6 @@
   )
 
 (define (move-up maze)
-  (display (world-loco maze))
   (if
    (and
     (< (posn-y (world-loco maze)) (- rows 1))
@@ -90,7 +97,36 @@
     (+ (posn-y (world-loco maze)) 1))
    "do nothing"))
 
+(define (move-down maze)
+  (if
+   (and
+    (< (posn-y (world-loco maze)) rows)
+    (> (posn-y (world-loco maze)) 0))
+   (set-posn-y!
+    (world-loco maze)
+    (- (posn-y (world-loco maze)) 1))
+   "do nothing"))
 
+
+(define (move-right maze)
+  (if
+   (and
+    (< (posn-x (world-loco maze)) (- cols 1))
+    (> (posn-x (world-loco maze)) -1))
+   (set-posn-x!
+    (world-loco maze)
+    (+ (posn-x (world-loco maze)) 1))
+   "do nothing"))
+
+(define (move-left maze)
+  (if
+   (and
+    (< (posn-x (world-loco maze)) cols)
+    (> (posn-x (world-loco maze)) 0))
+   (set-posn-x!
+    (world-loco maze)
+    (- (posn-x (world-loco maze)) 1))
+   "do nothing"))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Game Loop
 (set-node-img!
