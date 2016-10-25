@@ -25,8 +25,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Structs
 (struct node (visited x y img) #:transparent #:mutable)
-(define-struct world (grid))
-(define (make-board)
+(struct posn (x y) #:mutable #:transparent)
+(define-struct world (grid loco))
+(define (make-grid)
   "A Vector of Vectors for the grid"
   (vector->list
    (build-vector rows
@@ -38,7 +39,8 @@
 
 (define maze
   (make-world
-   (make-board)))
+   (make-grid)
+   (posn 0 0)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Draw Functions
@@ -64,12 +66,38 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; User input function
 (define (press m key)
-  (display m)
+  (cond
+    [(key=? key "up") (move-up m)])
+  (set-node-img!
+   (list-ref
+    (list-ref
+     (world-grid m)
+     (posn-x (world-loco m)))
+    (posn-y (world-loco m)))
+   (full-block))
+  ;; return the world/ maze
+  m
   )
+
+(define (move-up maze)
+  (display (world-loco maze))
+  (if
+   (and
+    (< (posn-y (world-loco maze)) (- rows 1))
+    (> (posn-y (world-loco maze)) -1))
+   (set-posn-y!
+    (world-loco maze)
+    (+ (posn-y (world-loco maze)) 1))
+   "do nothing"))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Game Loop
-(set-node-img! (list-ref (list-ref (world-grid maze) 0) 0) (full-block))
+(set-node-img!
+ (list-ref
+  (list-ref (world-grid maze) 0) 0)
+ (full-block))
+
 (big-bang maze
           (to-draw render)
           (on-key press))
