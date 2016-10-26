@@ -6,7 +6,7 @@
 ;; Drawing Definitions
 (define rows 20)     ; cells
 (define cols 20)
-(define cell 40)
+(define cell 20)
 (define margin (/ cell 2))
 (define background (empty-scene
                     (* cols cell)
@@ -116,11 +116,12 @@
     [(key=? key "i") (infinite-seed (make-state))]
     [(key=? key "g") (glider-seed (make-state))]
     [(key=? key "p") (pulsar-seed (make-state))]
+    [(key=? key "t") (test-seed (make-state))]
     [else (new-state w)]
     ))
 
 (define (main)
-  (big-bang (infinite-seed (make-state))
+  (big-bang (test-seed (make-state))
             ;;(on-tick tick 1)
             (on-key press)
             (to-draw render)))
@@ -297,7 +298,6 @@
    (list-ref
     (list-ref state 5) 5)
    #t)
-  ;;; THERE
   (set-node-alive!
    (list-ref
     (list-ref state 4) 7)
@@ -317,6 +317,89 @@
   state)
 
 
+(define (test-seed state)
+
+  ;; glider:
+  (set-node-alive!
+   (list-ref
+    (list-ref state 19) 3)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 18) 4)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 17) 2)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 17) 3)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 17) 4)
+   #t)
+
+  ;; pulsar
+
+  (set-node-alive!
+   (list-ref
+    (list-ref state 19) 16)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 18) 16)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 17) 16)
+   #t)
+
+
+  " X is outer"
+  (set-node-alive!
+   (list-ref
+    (list-ref state 1) 1)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 1) 3)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 2) 3)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 3) 5)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 4) 5)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 5) 5)
+   #t)
+  ;;; THERE
+  (set-node-alive!
+   (list-ref
+    (list-ref state 4) 7)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 5) 7)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 6) 7)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 5) 8)
+   #t)
+  state)
 
 
 
