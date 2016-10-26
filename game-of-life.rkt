@@ -4,8 +4,8 @@
 
 ;;;;;;;;;
 ;; Drawing Definitions
-(define rows 9)     ; cells
-(define cols 9)
+(define rows 20)     ; cells
+(define cols 20)
 (define cell 40)
 (define margin (/ cell 2))
 (define background (empty-scene
@@ -176,10 +176,30 @@
         (if (node-alive n) #t #f))))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Game Loop
 
-;; TODO: set Seed position
+(define (tick w)
+  "Draw the new state of the world"
+  (new-state w))
+
+(define (press w key)
+  (if
+   (key=? key "r")
+   (infinite-seed (make-state))
+   ;;(new-state w)
+   ;;(seed (list (cons 1 1) (cons 2 2)))
+   (new-state w)))
+
+(define (main)
+  (big-bang (infinite-seed (make-state))
+            ;;(on-tick tick 1)
+            (on-key press)
+            (to-draw render)))
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Seeds
 ;; X is outer list
 (define (a-seed state)
   (set-node-alive!
@@ -228,33 +248,55 @@
    #t)
   state)
 
-(define a-pairs
-  (list (cons 3 2) (cons 2 2) (cons 1 2)))
-
-(define (apply-pair pair state)
-  "Apply First is X Second is Y"
+(define (infinite-seed state)
+  " X is outer"
   (set-node-alive!
    (list-ref
-    (list-ref state (cdr pair)) (car pair)) #t))
+    (list-ref state 1) 1)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 1) 3)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 2) 3)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 3) 5)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 4) 5)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 5) 5)
+   #t)
+  ;;; THERE
+  (set-node-alive!
+   (list-ref
+    (list-ref state 4) 7)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 5) 7)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 6) 7)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 5) 8)
+   #t)
+  state)
 
-(define (seed pairs)
-  (let ([s (make-state)])
-    (apply-pair (car pairs) s)
-    (new-state s)))
-
-(define (tick w)
-  "Draw the new state of the world"
-  (new-state w))
-
-(define (press w key)
-  (if
-   (key=? key "r")
-   (new-state w)
-   ;;(seed (list (cons 1 1) (cons 2 2)))
-   (new-state w)))
 
 
-(big-bang (test-seed (make-state))
-          ;;(on-tick tick 1)
-          (on-key press)
-          (to-draw render))
+
+
+
+
+(main)
