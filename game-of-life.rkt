@@ -4,8 +4,8 @@
 
 ;;;;;;;;;
 ;; Drawing Definitions
-(define rows 5)     ; cells
-(define cols 5)
+(define rows 9)     ; cells
+(define cols 9)
 (define cell 40)
 (define margin (/ cell 2))
 (define background (empty-scene
@@ -38,19 +38,16 @@
         (lambda (n) ;; n is the x coord
           (node #f n m dead-block))))))))
 
-(define state (make-state))
-;;(define state-copy '())
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Draw Functions
 (define (draw-node n bkg)
   "Draw a node and set image according to status"
 
-  (if
-   (node-alive n)
-   (set-node-img! n alive-block)
-   (set-node-img! n dead-block)
-   )
+  (cond
+    [(node-alive n) (set-node-img! n alive-block)]
+    [(not (node-alive n)) (set-node-img! n dead-block)]
+    [else (set-node-img! n dead-block)])
   (place-image
    (node-img n)
    (+ (* cell (node-x n)) margin)
@@ -95,7 +92,7 @@
             (list-ref
              (list-ref old-state m) n)
             old-state)
-           n m '()))))))))
+           n m '() ))))))))
 
 (define (render w)
   "Render Takes in World state and returns state"
@@ -104,13 +101,6 @@
 ;;  (draw-nodes (new-state (new-state w))))
 ;;  (draw-nodes w))
 
-(define (tick w)
-  "Draw the new state of the world"
-  (new-state w))
-;;  (draw-nodes (new-state w)))
-
-(define (press w key)
-  (new-state w))
 
 
 
@@ -191,37 +181,80 @@
 
 ;; TODO: set Seed position
 ;; X is outer list
-(set-node-alive!
- (list-ref
-  (list-ref state 3) 2)
- #t)
-(set-node-alive!
- (list-ref
-  (list-ref state 2) 2)
- #t)
-(set-node-alive!
- (list-ref
-  (list-ref state 1) 2)
- #t)
-;;(set-node-alive!
-;; (list-ref
-;;  (list-ref state 1) 2) #t)
-;;(set-node-alive!
-;; (list-ref
-;;  (list-ref state 3) 2) #t)
+(define (a-seed state)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 3) 2)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 2) 2)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 1) 2)
+   #t)
+
+  (set-node-alive!
+   (list-ref
+    (list-ref state 4) 6) #t)
+;;  (set-node-alive!
+ ;;  (list-ref
+   ;; (list-ref state 4) 5) #t)
+
+  (set-node-alive!
+   (list-ref
+    (list-ref state 5) 6) #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 1) 1) #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 5) 5) #t)
+  state)
+
+(define (test-seed state)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 3) 2)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 2) 2)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 1) 2)
+   #t)
+  state)
+
+(define a-pairs
+  (list (cons 3 2) (cons 2 2) (cons 1 2)))
+
+(define (apply-pair pair state)
+  "Apply First is X Second is Y"
+  (set-node-alive!
+   (list-ref
+    (list-ref state (cdr pair)) (car pair)) #t))
+
+(define (seed pairs)
+  (let ([s (make-state)])
+    (apply-pair (car pairs) s)
+    (new-state s)))
+
+(define (tick w)
+  "Draw the new state of the world"
+  (new-state w))
+
+(define (press w key)
+  (if
+   (key=? key "r")
+   (new-state w)
+   ;;(seed (list (cons 1 1) (cons 2 2)))
+   (new-state w)))
 
 
-;;(display (tally-neighbors (list-ref (list-ref state 1) 1) state))
-;;(display (node-alive (list-ref (list-ref state 1) 1)))
-;;(display (apply-rules (list-ref (list-ref state 1) 1) state))
-;;n(newline)
-;;(display (tally-neighbors (list-ref (list-ref state 0) 0) state))
-;;(newline)
-;;(display (tally-neighbors (list-ref (list-ref state 3) 1) state))
-;;(display (tally-neighbors (list-ref (list-ref state 1) 1) state))
-;;(display (tally-neighbors (list-ref (list-ref state 1) 2) state))
-;;(new-state state)
-(big-bang state
-          (on-tick tick 1)
+(big-bang (test-seed (make-state))
+          ;;(on-tick tick 1)
           (on-key press)
           (to-draw render))
