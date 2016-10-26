@@ -1,7 +1,6 @@
-# racket-grid
+# Conway Game of Life
 A racket expirement
 
-## TODO
-- Grid
-- Maze
-- Game of Life
+## TODO:
+- Random seeds
+- An efficient seed system...
