@@ -19,11 +19,11 @@
   (square cell "outline" "black"))
 ;;(square CELL-SIZE #:outline #:black))
 (define full-block
-  (square cell "solid" "purple"))
+  (square cell "solid" "darkpurple"))
 (define here-block
   (overlay
    (circle (/ cell 2) "solid" "blue")
-   (square cell "solid" "purple")))
+   (square cell "solid" "darkpurple")))
 
 ;;(define (here-block)
 
