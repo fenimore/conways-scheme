@@ -45,6 +45,18 @@
 ;; Draw Functions
 (define (draw-node n bkg)
   "Draw a node and set image according to status"
+  (display (tally-neighbors n state))
+  (let ([neighbors (tally-neighbors n state)])
+    (display neighbors)
+    (display (node-alive n))
+    (cond
+      [(< neighbors 2) (set-node-alive! n #f)]
+      [(and (node-alive n) (or (= neighbors 2) (= neighbors 3)))
+       (set-node-alive! n #t)]
+      [(and (node-alive n) (> neighbors 3))
+       (set-node-alive! n #f)]
+      [(and (not (node-alive n)) (= neighbors 3))
+       (set-node-alive! n #t)]))
   (if
    (node-alive n)
    (set-node-img! n alive-block)
@@ -79,6 +91,12 @@
 ;; Function Seed Positions
 
 
+;; Rules:
+;; 1. Fewer than two neighbors dies
+;; 2. Two or three neighbors lives if living
+;; 3. Alive cells with > 3 n dies
+;; 4. Dead cell with exactly 3 neighbors reproduces
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Neighbor Functions
 ;; Outer List is Y and inner X
@@ -98,40 +116,40 @@
 
 (define (check-above x y state)
   "Check if node above is alive"
-  (let ([n (list-ref (list-ref state (+ x 0)) (+ y 1))])
-    (if (node-alive n) #t #f)))
-
+  (if (= y (- rows 1)) #f
+      (let ([n (list-ref (list-ref state (+ x 0)) (+ y 1))])
+        (if (node-alive n) #t #f))))
 (define (check-below x y state)
   "Check if node below is alive"
-  (let ([n (list-ref (list-ref state (+ x 0)) (- y 1))])
-    (if (node-alive n) #t #f)))
-
+  (if (= y 0) #f
+      (let ([n (list-ref (list-ref state (+ x 0)) (- y 1))])
+        (if (node-alive n) #t #f))))
 (define (check-right x y state)
   "Check if node right is alive"
-  (let ([n (list-ref (list-ref state (+ x 1)) (+ y 0))])
-    (if (node-alive n) #t #f)))
-
+  (if (= x (- cols 1)) #f
+      (let ([n (list-ref (list-ref state (+ x 1)) (+ y 0))])
+        (if (node-alive n) #t #f))))
 (define (check-left x y state)
   "Check if node left is alive"
-  (let ([n (list-ref (list-ref state (- x 1)) (+ y 0))])
-    (if (node-alive n) #t #f)))
-
-;; Diagnols
+  (if (= x 0) #f
+      (let ([n (list-ref (list-ref state (- x 1)) (+ y 0))])
+        (if (node-alive n) #t #f))))
 (define (check-right-above x y state)
-  (let ([n (list-ref (list-ref state (+ x 1)) (+ y 1))])
-    (if (node-alive n) #t #f)))
-
+  (if (or (= y (- rows 1)) (= x (- cols 1))) #f
+      (let ([n (list-ref (list-ref state (+ x 1)) (+ y 1))])
+        (if (node-alive n) #t #f))))
 (define (check-right-below x y state)
-  (let ([n (list-ref (list-ref state (+ x 1)) (- y 1))])
-    (if (node-alive n) #t #f)))
-
+  (if (or (= x (- cols 1)) (= y 0)) #f
+      (let ([n (list-ref (list-ref state (+ x 1)) (- y 1))])
+        (if (node-alive n) #t #f))))
 (define (check-left-above x y state)
-  (let ([n (list-ref (list-ref state (- x 1)) (+ y 1))])
-    (if (node-alive n) #t #f)))
-
+  (if (or (= y (- rows 1)) (= x 0)) #f
+      (let ([n (list-ref (list-ref state (- x 1)) (+ y 1))])
+        (if (node-alive n) #t #f))))
 (define (check-left-below x y state)
-  (let ([n (list-ref (list-ref state (- x 1)) (- y 1))])
-    (if (node-alive n) #t #f)))
+  (if (or (= x 0) (= y 0)) #f
+      (let ([n (list-ref (list-ref state (- x 1)) (- y 1))])
+        (if (node-alive n) #t #f))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -143,7 +161,14 @@
  (list-ref
   (list-ref state 4) 3)
  #t)
-
-(display (tally-neighbors (list-ref (list-ref state 4) 2) state))
-;;(big-bang state
-;;        (to-draw render))
+(set-node-alive!
+ (list-ref
+  (list-ref state 3) 3)
+ #t)
+(set-node-alive!
+ (list-ref
+  (list-ref state 2) 3)
+ #t)
+;;(display (tally-neighbors (list-ref (list-ref state 4) 2) state))
+(big-bang state
+        (to-draw render))
