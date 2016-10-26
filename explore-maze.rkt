@@ -25,12 +25,11 @@
    (circle (/ cell 2) "solid" "blue")
    (square cell "solid" "darkpurple")))
 
-;;(define (here-block)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Structs
 (struct node (visited x y img) #:transparent #:mutable)
-(struct posn (x y) #:mutable #:transparent)
+(struct posn (x y) #:mutable #:transparent) ;; user location
 (define-struct world (grid loco))
 (define (make-grid)
   "A Vector of Vectors for the grid"
@@ -59,6 +58,7 @@
    (- (- (* cell (node-y n)) (- (* cell cols) margin)))
    bkg))
 (define (visit-node n)
+  ;; TODO: Put this inside of Draw Node
   "Color in visited nodes"
   (if
    (node-visited n)
