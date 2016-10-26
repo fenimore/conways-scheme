@@ -5,8 +5,8 @@
 
 ;;;;;;;;;
 ;; Drawing Definitions
-(define rows 4)     ; cells
-(define cols 4)
+(define rows 8)     ; cells
+(define cols 8)
 (define cell 40)
 (define margin (/ cell 2))
 (define background (empty-scene
@@ -15,12 +15,12 @@
 
 ;;;;;;;;;;
 ;; Blocks
-(define (empty-block)
+(define empty-block
   (square cell "outline" "black"))
 ;;(square CELL-SIZE #:outline #:black))
-(define (full-block)
+(define full-block
   (square cell "solid" "black"))
-  ;;(square cell #:solid #:black))
+;;(define (here-block)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Structs
@@ -37,7 +37,7 @@
        (build-vector
         cols
         (lambda (n) ;; n is the x coord
-          (node #f m n (empty-block)))))))))
+          (node #f m n empty-block))))))))
 
 (define maze
   (make-world
@@ -74,7 +74,7 @@
     [(key=? key "left") (move-left m)]
     [(key=? key "down") (move-down m)])
 
-  (display (world-loco m))
+  ;;(display (world-loco m))
   ;; set the visited node to full
   (set-node-img!
    (list-ref
@@ -82,7 +82,7 @@
      (world-grid m)
      (posn-x (world-loco m)))
     (posn-y (world-loco m)))
-   (full-block))
+   full-block)
   ;; return the world/ maze
   m
   )
@@ -132,7 +132,7 @@
 (set-node-img!
  (list-ref
   (list-ref (world-grid maze) 0) 0)
- (full-block))
+ full-block)
 
 (big-bang maze
           (to-draw render)
