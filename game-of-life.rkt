@@ -182,12 +182,12 @@
   (new-state w))
 
 (define (press w key)
-  (if
-   (key=? key "r")
-   (infinite-seed (make-state))
-   ;;(new-state w)
-   ;;(seed (list (cons 1 1) (cons 2 2)))
-   (new-state w)))
+  (cond
+    [(key=? key "i") (infinite-seed (make-state))]
+    [(key=? key "g") (gun-seed (make-state))]
+    [(key=? key "p") (pulsar-seed (make-state))]
+    [else (new-state w)]
+    ))
 
 (define (main)
   (big-bang (infinite-seed (make-state))
@@ -201,7 +201,50 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Seeds
 ;; X is outer list
-(define (a-seed state)
+(define (glider-seed state)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 19) 3)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 18) 4)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 17) 2)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 17) 3)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 17) 4)
+   #t)
+
+  (set-node-alive!
+   (list-ref
+    (list-ref state 12) 3)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 11) 4)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 10) 2)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 10) 3)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 10) 4)
+   #t)
+  state)
+(define (pulsar-seed state)
   (set-node-alive!
    (list-ref
     (list-ref state 3) 2)
@@ -215,38 +258,35 @@
     (list-ref state 1) 2)
    #t)
 
-  (set-node-alive!
-   (list-ref
-    (list-ref state 4) 6) #t)
-;;  (set-node-alive!
- ;;  (list-ref
-   ;; (list-ref state 4) 5) #t)
+  ;; TOAD
 
   (set-node-alive!
    (list-ref
-    (list-ref state 5) 6) #t)
+    (list-ref state 10) 10)
+   #t)
   (set-node-alive!
    (list-ref
-    (list-ref state 1) 1) #t)
+    (list-ref state 10) 11)
+   #t)
   (set-node-alive!
    (list-ref
-    (list-ref state 5) 5) #t)
+    (list-ref state 10) 12)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 11) 11)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 11) 12)
+   #t)
+  (set-node-alive!
+   (list-ref
+    (list-ref state 11) 13)
+   #t)
   state)
 
-(define (test-seed state)
-  (set-node-alive!
-   (list-ref
-    (list-ref state 3) 2)
-   #t)
-  (set-node-alive!
-   (list-ref
-    (list-ref state 2) 2)
-   #t)
-  (set-node-alive!
-   (list-ref
-    (list-ref state 1) 2)
-   #t)
-  state)
+
 
 (define (infinite-seed state)
   " X is outer"
