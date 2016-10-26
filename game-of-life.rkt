@@ -39,6 +39,7 @@
         (lambda (n) ;; n is the x coord
           (node #f m n dead-block))))))))
 
+(define state (make-state))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Draw Functions
@@ -74,9 +75,23 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Neighbor Functions
-(define (tally-neighbors n)
-  (node-x n)
-  (node-y n))
+(define (tally-neighbors n state)
+  (check-above (node-x n) (node-y n) state)
+  )
+
+(define (check-above x y state)
+  "Check if node above is alive"
+  (let ([n (list-ref
+            (list-ref state (+ x 0))
+            (+ y 1))])
+    (display n)
+    (if
+     (node-alive n)
+     #t
+     #f
+     )
+    )
+  )
   ;; 8 Neighbors
   ;; x y
   ;; 1 0
@@ -94,8 +109,15 @@
 ;; Game Loop
 
 ;; TODO: set Seed position
-(big-bang (make-state)
-          (to-draw render))
+
+(set-node-alive!
+ (list-ref
+  (list-ref state 4) 3)
+ #t)
+
+(display (tally-neighbors (list-ref (list-ref state 4) 2) state))
+;;(big-bang state
+  ;;        (to-draw render))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Function Seed Positions
