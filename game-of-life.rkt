@@ -37,26 +37,18 @@
        (build-vector
         cols
         (lambda (n) ;; n is the x coord
-          (node #f m n dead-block))))))))
+          (node #f n m dead-block))))))))
+
+
 
 (define state (make-state))
+;;(define state-copy '())
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Draw Functions
 (define (draw-node n bkg)
   "Draw a node and set image according to status"
-  (display (tally-neighbors n state))
-  (let ([neighbors (tally-neighbors n state)])
-    (display neighbors)
-    (display (node-alive n))
-    (cond
-      [(< neighbors 2) (set-node-alive! n #f)]
-      [(and (node-alive n) (or (= neighbors 2) (= neighbors 3)))
-       (set-node-alive! n #t)]
-      [(and (node-alive n) (> neighbors 3))
-       (set-node-alive! n #f)]
-      [(and (not (node-alive n)) (= neighbors 3))
-       (set-node-alive! n #t)]))
+
   (if
    (node-alive n)
    (set-node-img! n alive-block)
@@ -72,11 +64,44 @@
   "Draw a column from a list of nodes"
   (foldl draw-node background nodes))
 (define (draw-nodes nodes)
+  ;;(set! state-copy nodes)
   "Draws a List of List node grid"
   (foldl draw-col background nodes))
 
+
+(define (set-state n state)
+  "Returns true or false for state"
+  (let ([neighbors (tally-neighbors n state)])
+    (cond
+      [(< neighbors 2) #f]
+      [(and
+        (node-alive n)
+        (or (= neighbors 2) (= neighbors 3))) #t]
+      [(and (node-alive n) (> neighbors 3)) #f]
+      [(and (not (node-alive n)) (= neighbors 3)) #t])))
+
+
+(define (new-state)
+  "A Vector of Vectors for the grid in Lists"
+  (vector->list
+   (build-vector
+    rows
+    (lambda (m) ;; m is the x coord
+      (vector->list
+       (build-vector
+        cols
+        (lambda (n) ;; n is the y coord
+
+
+          (node #f m n dead-block)
+
+          )
+
+        ))))))
+
 (define (render w)
   "Render Takes in World state and returns state"
+
   (draw-nodes w))
 
 
@@ -99,7 +124,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Neighbor Functions
-;; Outer List is Y and inner X
+;; Outer List is X and inner Y
 (define (tally-neighbors n state)
   (length
    (filter
@@ -117,38 +142,38 @@
 (define (check-above x y state)
   "Check if node above is alive"
   (if (= y (- rows 1)) #f
-      (let ([n (list-ref (list-ref state (+ x 0)) (+ y 1))])
+      (let ([n (list-ref (list-ref state (+ y 1)) x)])
         (if (node-alive n) #t #f))))
 (define (check-below x y state)
   "Check if node below is alive"
   (if (= y 0) #f
-      (let ([n (list-ref (list-ref state (+ x 0)) (- y 1))])
+      (let ([n (list-ref (list-ref state (- y 1)) x)])
         (if (node-alive n) #t #f))))
 (define (check-right x y state)
   "Check if node right is alive"
   (if (= x (- cols 1)) #f
-      (let ([n (list-ref (list-ref state (+ x 1)) (+ y 0))])
+      (let ([n (list-ref (list-ref state y) (+ x 1))])
         (if (node-alive n) #t #f))))
 (define (check-left x y state)
   "Check if node left is alive"
   (if (= x 0) #f
-      (let ([n (list-ref (list-ref state (- x 1)) (+ y 0))])
+      (let ([n (list-ref (list-ref state y) (- x 1))])
         (if (node-alive n) #t #f))))
 (define (check-right-above x y state)
   (if (or (= y (- rows 1)) (= x (- cols 1))) #f
-      (let ([n (list-ref (list-ref state (+ x 1)) (+ y 1))])
+      (let ([n (list-ref (list-ref state (+ y 1)) (+ x 1))])
         (if (node-alive n) #t #f))))
 (define (check-right-below x y state)
   (if (or (= x (- cols 1)) (= y 0)) #f
-      (let ([n (list-ref (list-ref state (+ x 1)) (- y 1))])
+      (let ([n (list-ref (list-ref state (- y 1)) (+ x 1))])
         (if (node-alive n) #t #f))))
 (define (check-left-above x y state)
   (if (or (= y (- rows 1)) (= x 0)) #f
-      (let ([n (list-ref (list-ref state (- x 1)) (+ y 1))])
+      (let ([n (list-ref (list-ref state (+ y 1)) (- x 1))])
         (if (node-alive n) #t #f))))
 (define (check-left-below x y state)
   (if (or (= x 0) (= y 0)) #f
-      (let ([n (list-ref (list-ref state (- x 1)) (- y 1))])
+      (let ([n (list-ref (list-ref state (- y 1)) (- x 1))])
         (if (node-alive n) #t #f))))
 
 
@@ -156,7 +181,7 @@
 ;; Game Loop
 
 ;; TODO: set Seed position
-
+;; X is outer list
 (set-node-alive!
  (list-ref
   (list-ref state 4) 3)
@@ -169,6 +194,18 @@
  (list-ref
   (list-ref state 2) 3)
  #t)
-;;(display (tally-neighbors (list-ref (list-ref state 4) 2) state))
-(big-bang state
-        (to-draw render))
+
+(set-node-alive!
+ (list-ref
+  (list-ref state 1) 2) #t)
+(set-node-alive!
+ (list-ref
+  (list-ref state 3) 2) #t)
+
+
+(display (tally-neighbors (list-ref (list-ref state 3) 2) state))
+(newline)
+(display (tally-neighbors (list-ref (list-ref state 1) 1) state))
+(display (tally-neighbors (list-ref (list-ref state 1) 2) state))
+;;(big-bang state
+;         (to-draw render))
