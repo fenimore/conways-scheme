@@ -19,7 +19,9 @@
   (square cell "outline" "black"))
 ;;(square CELL-SIZE #:outline #:black))
 (define full-block
-  (square cell "solid" "black"))
+  (square cell "solid" "purple"))
+(define here-block
+  (square cell "solid" "blue"))
 ;;(define (here-block)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -53,16 +55,38 @@
    (+ (* cell (node-x n)) margin)
    (- (- (* cell (node-y n)) (- (* cell cols) margin)))
    bkg))
+(define (visit-node n)
+  "Color in visited nodes"
+  (if
+   (node-visited n)
+   (set-node-img! n full-block)
+   (set-node-img! n empty-block)
+   )
+  )
 (define (draw-col nodes background)
   "Draw a column from a list of nodes"
   (foldl draw-node background nodes))
 (define (draw-nodes nodes)
   "Draws a List of List node grid"
   (foldl draw-col background nodes))
-
+(define (fill-visited-rows nodes)
+  (map visit-node nodes))
+(define (fill-visited nodes)
+  (map fill-visited-rows nodes))
 
 (define (render m)
   "game state is maze, list of nodes"
+  ;; Draw in Visited nodes
+  (fill-visited (world-grid m))
+  ;; Set User Location
+  (set-node-img!
+   (list-ref
+    (list-ref
+     (world-grid m)
+     (posn-x (world-loco m)))
+    (posn-y (world-loco m)))
+   here-block)
+  ;; Draw on Nodes
   (draw-nodes (world-grid m)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -76,13 +100,14 @@
 
   ;;(display (world-loco m))
   ;; set the visited node to full
-  (set-node-img!
+
+  (set-node-visited!
    (list-ref
     (list-ref
      (world-grid m)
      (posn-x (world-loco m)))
     (posn-y (world-loco m)))
-   full-block)
+   #t)
   ;; return the world/ maze
   m
   )
@@ -129,10 +154,10 @@
    "do nothing"))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Game Loop
-(set-node-img!
+(set-node-visited!
  (list-ref
   (list-ref (world-grid maze) 0) 0)
- full-block)
+ #t)
 
 (big-bang maze
           (to-draw render)
