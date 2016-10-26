@@ -21,7 +21,10 @@
 (define full-block
   (square cell "solid" "purple"))
 (define here-block
-  (square cell "solid" "blue"))
+  (overlay
+   (circle (/ cell 2) "solid" "blue")
+   (square cell "solid" "purple")))
+
 ;;(define (here-block)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
