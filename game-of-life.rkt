@@ -19,11 +19,11 @@
   (square cell "outline" "black"))
 ;;(square CELL-SIZE #:outline #:black))
 (define alive-block
-  (square cell "solid" "darkpurple"))
+  (square cell "solid" "black"))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Structs
+;; Structs And World Construction
 (struct node (alive x y img) #:transparent #:mutable)
 ;;(define-struct world (grid))
 (define (make-state)
@@ -96,30 +96,35 @@
 
 (define (render w)
   "Render Takes in World state and returns state"
-  ;;(set! w (new-state w))
   (draw-nodes (new-state w)))
-;;  (draw-nodes (new-state (new-state w))))
-;;  (draw-nodes w))
-
-
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; User Functionality
-;; TODO: Select seed pattern
-
-
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Function Seed Positions
-
 
 ;; Rules:
 ;; 1. Fewer than two neighbors dies
 ;; 2. Two or three neighbors lives if living
 ;; 3. Alive cells with > 3 n dies
 ;; 4. Dead cell with exactly 3 neighbors reproduces
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Big bang Thingies
+
+(define (tick w)
+  "Draw the new state of the world"
+  (new-state w))
+
+(define (press w key)
+  (cond
+    [(key=? key "i") (infinite-seed (make-state))]
+    [(key=? key "g") (glider-seed (make-state))]
+    [(key=? key "p") (pulsar-seed (make-state))]
+    [else (new-state w)]
+    ))
+
+(define (main)
+  (big-bang (infinite-seed (make-state))
+            ;;(on-tick tick 1)
+            (on-key press)
+            (to-draw render)))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Neighbor Functions
@@ -174,28 +179,6 @@
   (if (or (= x 0) (= y 0)) #f
       (let ([n (list-ref (list-ref state (- y 1)) (- x 1))])
         (if (node-alive n) #t #f))))
-
-
-
-(define (tick w)
-  "Draw the new state of the world"
-  (new-state w))
-
-(define (press w key)
-  (cond
-    [(key=? key "i") (infinite-seed (make-state))]
-    [(key=? key "g") (gun-seed (make-state))]
-    [(key=? key "p") (pulsar-seed (make-state))]
-    [else (new-state w)]
-    ))
-
-(define (main)
-  (big-bang (infinite-seed (make-state))
-            ;;(on-tick tick 1)
-            (on-key press)
-            (to-draw render)))
-
-
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
