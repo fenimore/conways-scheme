@@ -5,8 +5,8 @@
 
 ;;;;;;;;;
 ;; Drawing Definitions
-(define rows 8)     ; cells
-(define cols 8)
+(define rows 5)     ; cells
+(define cols 5)
 (define cell 40)
 (define margin (/ cell 2))
 (define background (empty-scene
@@ -69,40 +69,42 @@
   (foldl draw-col background nodes))
 
 
-(define (set-state n state)
+(define (apply-rules n old-state)
   "Returns true or false for state"
-  (let ([neighbors (tally-neighbors n state)])
+  (let ([neighbors (tally-neighbors n old-state)])
     (cond
       [(< neighbors 2) #f]
       [(and
         (node-alive n)
+        ;;(= neighbors 3)) #t]
         (or (= neighbors 2) (= neighbors 3))) #t]
       [(and (node-alive n) (> neighbors 3)) #f]
-      [(and (not (node-alive n)) (= neighbors 3)) #t])))
+      [(and (not (node-alive n)) (= neighbors 3)) #t]
+      [else #f])))
 
 
-(define (new-state)
+(define (new-state old-state)
   "A Vector of Vectors for the grid in Lists"
   (vector->list
    (build-vector
     rows
-    (lambda (m) ;; m is the x coord
+    (lambda (m) ;; m is the y coord
       (vector->list
        (build-vector
         cols
-        (lambda (n) ;; n is the y coord
-
-
-          (node #f m n dead-block)
-
-          )
-
-        ))))))
+        (lambda (n) ;; n is the x coord
+          (node
+           (apply-rules
+            (list-ref
+             (list-ref old-state m) n)
+            old-state)
+           n m '()))))))))
 
 (define (render w)
   "Render Takes in World state and returns state"
-
-  (draw-nodes w))
+  ;;(set! w (new-state w))
+  (draw-nodes (new-state w)))
+;;  (draw-nodes w))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -125,19 +127,19 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Neighbor Functions
 ;; Outer List is X and inner Y
-(define (tally-neighbors n state)
+(define (tally-neighbors n old-state)
   (length
    (filter
     identity
     (list
-     (check-above (node-x n) (node-y n) state)
-     (check-below (node-x n) (node-y n) state)
-     (check-right (node-x n) (node-y n) state)
-     (check-left (node-x n) (node-y n) state)
-     (check-right-above (node-x n) (node-y n) state)
-     (check-right-below (node-x n) (node-y n) state)
-     (check-left-above (node-x n) (node-y n) state)
-     (check-left-below (node-x n) (node-y n) state)))))
+     (check-above (node-x n) (node-y n) old-state)
+     (check-below (node-x n) (node-y n) old-state)
+     (check-right (node-x n) (node-y n) old-state)
+     (check-left (node-x n) (node-y n) old-state)
+     (check-right-above (node-x n) (node-y n) old-state)
+     (check-right-below (node-x n) (node-y n) old-state)
+     (check-left-above (node-x n) (node-y n) old-state)
+     (check-left-below (node-x n) (node-y n) old-state)))))
 
 (define (check-above x y state)
   "Check if node above is alive"
@@ -184,28 +186,33 @@
 ;; X is outer list
 (set-node-alive!
  (list-ref
-  (list-ref state 4) 3)
+  (list-ref state 3) 2)
  #t)
 (set-node-alive!
  (list-ref
-  (list-ref state 3) 3)
+  (list-ref state 2) 2)
  #t)
 (set-node-alive!
  (list-ref
-  (list-ref state 2) 3)
+  (list-ref state 1) 2)
  #t)
+;;(set-node-alive!
+;; (list-ref
+;;  (list-ref state 1) 2) #t)
+;;(set-node-alive!
+;; (list-ref
+;;  (list-ref state 3) 2) #t)
 
-(set-node-alive!
- (list-ref
-  (list-ref state 1) 2) #t)
-(set-node-alive!
- (list-ref
-  (list-ref state 3) 2) #t)
 
-
-(display (tally-neighbors (list-ref (list-ref state 3) 2) state))
-(newline)
-(display (tally-neighbors (list-ref (list-ref state 1) 1) state))
-(display (tally-neighbors (list-ref (list-ref state 1) 2) state))
-;;(big-bang state
-;         (to-draw render))
+;;(display (tally-neighbors (list-ref (list-ref state 1) 1) state))
+;;(display (node-alive (list-ref (list-ref state 1) 1)))
+;;(display (apply-rules (list-ref (list-ref state 1) 1) state))
+;;n(newline)
+;;(display (tally-neighbors (list-ref (list-ref state 0) 0) state))
+;;(newline)
+;;(display (tally-neighbors (list-ref (list-ref state 3) 1) state))
+;;(display (tally-neighbors (list-ref (list-ref state 1) 1) state))
+;;(display (tally-neighbors (list-ref (list-ref state 1) 2) state))
+;;(new-state state)
+(big-bang state
+          (to-draw render))
