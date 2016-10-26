@@ -1,6 +1,5 @@
 #lang racket
-(require 2htdp/image)
-(require 2htdp/universe)
+(require 2htdp/universe 2htdp/image)
 
 
 ;;;;;;;;;
@@ -38,8 +37,6 @@
         cols
         (lambda (n) ;; n is the x coord
           (node #f n m dead-block))))))))
-
-
 
 (define state (make-state))
 ;;(define state-copy '())
@@ -104,7 +101,17 @@
   "Render Takes in World state and returns state"
   ;;(set! w (new-state w))
   (draw-nodes (new-state w)))
+;;  (draw-nodes (new-state (new-state w))))
 ;;  (draw-nodes w))
+
+(define (tick w)
+  "Draw the new state of the world"
+  (new-state w))
+;;  (draw-nodes (new-state w)))
+
+(define (press w key)
+  (new-state w))
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -215,4 +222,6 @@
 ;;(display (tally-neighbors (list-ref (list-ref state 1) 2) state))
 ;;(new-state state)
 (big-bang state
+          (on-tick tick 1)
+          (on-key press)
           (to-draw render))
