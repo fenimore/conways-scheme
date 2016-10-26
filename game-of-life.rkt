@@ -75,6 +75,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Neighbor Functions
+;; Outer List is Y and inner X
 (define (tally-neighbors n state)
   (check-above (node-x n) (node-y n) state)
   )
@@ -92,17 +93,102 @@
      )
     )
   )
-  ;; 8 Neighbors
-  ;; x y
-  ;; 1 0
-  ;; -1 0
-  ;; 0 1
-  ;; 0 -1
-  ;; 0 0
-  ;; 1 1
-  ;; 1 -1
-  ;; -1 1
 
+(define (check-below x y state)
+  "Check if node below is alive"
+  (let ([n (list-ref
+            (list-ref state (+ x 0))
+            (- y 1))])
+    (display n)
+    (if
+     (node-alive n)
+     #t
+     #f
+     )
+    )
+  )
+
+(define (check-right x y state)
+  "Check if node right is alive"
+  (let ([n (list-ref
+            (list-ref state (+ x 1))
+            (+ y 0))])
+    (display n)
+    (if
+     (node-alive n)
+     #t
+     #f
+     )
+    )
+  )
+
+(define (check-left x y state)
+  "Check if node left is alive"
+  (let ([n (list-ref
+            (list-ref state (- x 1))
+            (+ y 0))])
+    (display n)
+    (if
+     (node-alive n)
+     #t
+     #f
+     )
+    )
+  )
+
+;; Diagnols
+
+(define (check-right-above x y state)
+  (let ([n (list-ref
+            (list-ref state (+ x 1))
+            (+ y 1))])
+    (display n)
+    (if
+     (node-alive n)
+     #t
+     #f
+     )
+    )
+  )
+
+(define (check-right-below x y state)
+  (let ([n (list-ref
+            (list-ref state (+ x 1))
+            (- y 1))])
+    (display n)
+    (if
+     (node-alive n)
+     #t
+     #f
+     )
+    )
+  )
+
+(define (check-left-above x y state)
+  (let ([n (list-ref
+            (list-ref state (- x 1))
+            (+ y 1))])
+    (display n)
+    (if
+     (node-alive n)
+     #t
+     #f
+     )
+    )
+  )
+
+(define (check-left-below x y state)
+  (let ([n (list-ref
+            (list-ref state (- x 1))
+            (- y 1))])
+    (display n)
+    (if
+     (node-alive n)
+     #t
+     #f
+     )
+    )
+  )
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -115,9 +201,9 @@
   (list-ref state 4) 3)
  #t)
 
-(display (tally-neighbors (list-ref (list-ref state 4) 2) state))
-;;(big-bang state
-  ;;        (to-draw render))
+;;(display (tally-neighbors (list-ref (list-ref state 4) 2) state))
+(big-bang state
+          (to-draw render))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Function Seed Positions
